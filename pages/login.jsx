@@ -3,11 +3,17 @@ import { useState, useContext } from "react";
 import UserContext from "context/Context";
 import { user, key, login } from "scripts/svgs";
 import { useRouter } from "next/router";
+import fetch from "isomorphic-unfetch";
 import axios from "axios";
 import MessageBox from "components/MessageBox";
+const cors = require("cors");
+cors();
 
 export default function Login() {
+  // initializes the hook for page redirect
   const router = useRouter();
+
+  // sets the state for form
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [messageBox, setMesageBox] = useState();
@@ -16,6 +22,8 @@ export default function Login() {
 
   const submitHandler = async (e) => {
     e.preventDefault();
+
+    // handles the login and calls the necessary functions to set up the UI
     await axios
       .post(`${process.env.API_URL}/student/login`, {
         username,
@@ -26,7 +34,7 @@ export default function Login() {
         sessionStorage.setItem("account", "student");
         setMesageBox(<MessageBox message={"logged in"} />);
         setAccountType("student");
-        router.push("/");
+        router.push("/profile");
       })
       .catch((error) => {
         setMesageBox(<MessageBox message={error.message} />);
